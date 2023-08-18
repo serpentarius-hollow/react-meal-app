@@ -6,8 +6,10 @@ import MealItem from "./MealItem/MealItem";
 
 const AvailableMeals = (props) => {
   const [meals, setMeals] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
     fetch(
       "https://react-meal-app-c4322-default-rtdb.asia-southeast1.firebasedatabase.app/meals.json"
     )
@@ -24,6 +26,7 @@ const AvailableMeals = (props) => {
         }
 
         setMeals(loadedMeals);
+        setIsLoading(false);
       });
   }, []);
 
@@ -38,6 +41,14 @@ const AvailableMeals = (props) => {
       />
     );
   });
+
+  if (isLoading) {
+    return (
+      <section className={classes.MealsLoading}>
+        <p>Loading...</p>
+      </section>
+    );
+  }
 
   return (
     <section className={classes.meals}>
