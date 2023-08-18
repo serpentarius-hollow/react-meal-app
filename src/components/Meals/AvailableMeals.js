@@ -7,13 +7,19 @@ import MealItem from "./MealItem/MealItem";
 const AvailableMeals = (props) => {
   const [meals, setMeals] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [httpError, setHttpError] = useState(null);
 
   useEffect(() => {
     setIsLoading(true);
     fetch(
       "https://react-meal-app-c4322-default-rtdb.asia-southeast1.firebasedatabase.app/meals.json"
     )
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Something went wrong!");
+        }
+        return response.json();
+      })
       .then((data) => {
         const loadedMeals = [];
         for (const key in data) {
@@ -27,6 +33,10 @@ const AvailableMeals = (props) => {
 
         setMeals(loadedMeals);
         setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        setHttpError(err.message);
       });
   }, []);
 
@@ -46,6 +56,14 @@ const AvailableMeals = (props) => {
     return (
       <section className={classes.MealsLoading}>
         <p>Loading...</p>
+      </section>
+    );
+  }
+
+  if (httpError) {
+    return (
+      <section className={classes.MealsError}>
+        <p>{httpError}</p>
       </section>
     );
   }
